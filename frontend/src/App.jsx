@@ -10,6 +10,11 @@ export default function App() {
   const [busca, setBusca] = useState('');
   const [categoriaAtiva, setCategoriaAtiva] = useState('Todos');
 
+  // Estado do carrinho
+  const [carrinho, setCarrinho] = useState([]);
+  const [carrinhoAberto, setCarrinhoAberto] = useState(false);
+
+
 
 
   useEffect(() => {
@@ -31,6 +36,43 @@ export default function App() {
 
     buscarProdutos();
   }, []);
+
+  // Função para adicionar item ao carrinho 
+  const adicionarAocarrinho = (produto) => {
+    setCarrinho((itensAtuais) => {
+      // verificar se o produto já está no carrinho
+      const itemExiste = itensAtuais.find((item) => item.id === produto.id);
+
+      if (itemExiste) {
+        // se existe, aumenta a quantidade em +1
+        return itensAtuais.map((item) => 
+          item.id === produto.id ? {...item, quantidade: item.quantidade + 1 } : item
+      );
+      }
+      // se não existe, adiciona o novo produto com quantidade 1
+      return [...itensAtuais, {...produto, quantidade : 1 }];
+    });
+  };
+
+  // Função para remover ou diminuir item no carrinho
+  const removerDoCarrinho = (id) => {
+    setCarrinho((itensAtuais) => {
+      const item = itensAtuais.find((i) => i.id === id);
+      if(item.quantidade === 1) {
+        return itensAtuais.filter((i) => i.id !== id);
+      }
+      return itensAtuais.map((i) => 
+      i.id === id ? { ...i, quantidade: i.quantidade - 1 } : i );
+    });
+  };
+
+  // Cálculos do Carrinho
+  const  totalItens = carrinho.reduce((acc, item) => acc + item.quantidade, 0);
+  const valorTotal = carrinho.reduce((acc, item) => acc + Number(item.preco) * item.quantidade, 0);
+
+  
+
+
 
   //Filtragem dinâmica 
   const produtosFiltrados = produtos.filter((produto) => {
@@ -62,16 +104,30 @@ export default function App() {
   
 
   return (
-    <div className="min-h-screen bg-gray-50 text-gray-900 font-sans">
+    <div className="min-h-screen bg-gray-50 text-gray-900 font-sans relative overflow-x-hidden">
       {/* header */}
-      <header className="bg-white shadow-sm border-b border-gray-100 sticky top-0 z-50">
+      <header className="bg-white shadow-sm border-b border-gray-100 sticky top-0 z-40">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
           <h1 className="text-2xl font-black tracking-tight text-amber-600">
-            Pães & Doces <span className="texr-gray-800">Cia</span>
+            <span className="texr-gray-800">Pães & Doces Cia</span>
           </h1>
-            <span className=" bg-amber-50 text-amber-700 text-xs font-semibold px-3 py1 rounded-full border border-amber-200">
-              Backend conectado
-            </span>
+
+          {/* Botão de Sacola de compras */}
+          <button
+           onClick={() => setCarrinhoAberto(true)}  className='bg-amber-600 hover:bg-amber-700 text-white font-bold pt-2 px-4 rounded-xl flex items-center gap-2 transition-colors cursor-pointer shadow-sm shadow-amber-200'
+          >
+            <span >
+               Sacola</span>
+              {totalItens > 0 && (
+                <span className='bg-white text-amber-700 text-xs font-black rounded-full w-5 h-5 flex item-center justify-center'>
+                  {totalItens}
+                </span>
+              )}
+          </button>
+
+
+
+            
         </div>
       </header>
 
@@ -87,7 +143,7 @@ export default function App() {
             placeholder='Buscar por cardápio...'
             value={busca}
             onChange={(e) => setBusca(e.target.value)}
-            className="w-full px-4 py-4.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500 focus:bg-white transition-all text-sm"
+            className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500 focus:bg-white transition-all text-sm"
              />
           </div>
 
@@ -132,15 +188,70 @@ export default function App() {
         </div>
       ) : ( 
         //Grid dos produtos
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 justify-items-center">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 justify-items-center cursor-pointer">
           {produtosFiltrados.map((produto) => (
-            <CardProduto key={produto.id} produto={produto} />
+            <CardProduto key={produto.id} produto={produto} onAdicionar={adicionarAocarrinho}/>
           ))}
         </div>
-      )
-    }
+      )}
       </main>
+
+      {/* Sidebar so carrinho ( vai aparece ao clicar na sacola ) */}
+      {carrinhoAberto && (
+        <div className='fixed inset-0 bg-black/40 z-50 flex justify-end backdrop-blur-sm animate-fade-in'>
+          <div className='w-full max-w-md bg-white h-full shadow-2xl flex flex-col p-6 animate-sline-left'>
+
+            {/* Topo do carrinho */}
+            <div className='flex items-center justify-between border-b border-gray-100 pb-4 mb-4'>
+              <h2 className='text-xl font-bold text-gray-900'> Sua sacola</h2>
+              <button
+              onClick={() => setCarrinhoAberto(false)} className='text-gray-400 hover:text-gray-600 font-bold text-lg cursor-pointer p-1'
+              >  ✕ </button>
+            </div>
+
+
+            {/* Lista de itens adicionados */}
+            <div>
+              {carrinho.length === 0 ? (
+                <div>
+                  Sua sacola está vazia. Que tal um pãozinho? 🥖
+                </div>
+              ) : (
+                carrinho.map((item) => ( 
+                  <div key={item.id} className='flex items-center gap-4 bg-gray-50 p-3 rounded-xl border border-gray-100 '>
+                    <img src={item.imagem} alt={item.nome} className='w-12 h-12 object-cover rounded-lg' />
+                    <div className='flex-1 min-w-0'>
+                      <h4 className='text-sm font-bold text-gray-900 truncate'>{item.name}</h4>
+                      <p className='text-xs text-gray-500'>R$ {Number(item.preco).toFixed(2) } x {item.quantidade}</p>
+                    </div>
+
+                    {/*Botões de controle de quantidade */}
+                    <div className='flex items-center gap-2 bg-white border border-gray-200 rounded-lg p-1'>
+                      <button onClick={() => removerDoCarrinho(item.id)} className='px-1.5 text-gray-500 hover:text-red-500 font-bold cursor-pointer'>-</button>
+                      <span className='text-xs font-bold px-1'>{item.quantidade}</span>
+                      <button onClick={() => adicionarAocarrinho(item)} className='px-1.5 text-gray-500 hover:text-amber-600 font-bold cursor-pointer'>+</button>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+            {/* Rodapé com valor total */}
+            {carrinho.length > 0 && (
+              <div className='border-t border-gray-400 pt-4 mt-4 space-y-4'>
+                <div className='flex item-center justify-between text-lg font-black text-gray-900'>
+                  <span>Total:</span>
+                  <span>R$ {valorTotal.toLocaleString('pt-br', { minimumFractionDigits: 2})} </span>
+                </div>
+                <button className='w-full bg-amber-500 hover:bg-amber-600 text-white font-bold py-3 rounded-xl transition-colors cursor-pointer text-center'>
+                  Finalzar Pedido
+                </button>
+              </div>
+            )}
+
+          </div>
+        </div>
+      )}
     </div>
      
-  )
+  );
 }
