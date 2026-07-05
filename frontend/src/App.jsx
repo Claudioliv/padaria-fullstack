@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import CardProduto from './components/CardProduto';
 
+// icon
+import {LuShoppingBag, LuTrash, LuPhone, LuInstagram, LuFacebook} from 'react-icons/lu'
 
 export default function App() {
   const [produtos, setProdutos] = useState([]);
@@ -66,6 +68,13 @@ export default function App() {
     });
   };
 
+
+  //Função: Deletar item direto do carrinho
+  const deletarDoCarrinho = (id) => {
+    setCarrinho((itensAtuais) => itensAtuais.filter((item) => item.id !== id));
+  }
+
+
   // Cálculos do Carrinho
   const  totalItens = carrinho.reduce((acc, item) => acc + item.quantidade, 0);
   const valorTotal = carrinho.reduce((acc, item) => acc + Number(item.preco) * item.quantidade, 0);
@@ -114,20 +123,18 @@ export default function App() {
 
           {/* Botão de Sacola de compras */}
           <button
-           onClick={() => setCarrinhoAberto(true)}  className='bg-amber-600 hover:bg-amber-700 text-white font-bold pt-2 px-4 rounded-xl flex items-center gap-2 transition-colors cursor-pointer shadow-sm shadow-amber-200'
+           onClick={() => setCarrinhoAberto(true)}  className='bg-amber-600 hover:bg-amber-700 text-white font-bold pt-2 px-4 rounded-xl flex items-center gap-2 transition-colors cursor-pointer shadow-sm shadow-amber-200 group'
           >
-            <span >
-               Sacola</span>
+            <LuShoppingBag className='text-lg group-hover:scale-110 transition-transform'/>
+            <span className='text-sm tracking-wide hidden sm:inline'>
+               Minha Sacola</span>
               {totalItens > 0 && (
-                <span className='bg-white text-amber-700 text-xs font-black rounded-full w-5 h-5 flex item-center justify-center'>
+                <span className='bg-white text-amber-700 text-xs font-black rounded-full w-5 h-5 flex item-center justify-center animate-pulse'>
                   {totalItens}
                 </span>
               )}
           </button>
 
-
-
-            
         </div>
       </header>
 
@@ -138,7 +145,7 @@ export default function App() {
         <div className="mb-10 bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex flex-col md:flex-row gap-4 items-center justify-between">
 
           {/* Input de busca */}
-          <div className="w-full md:w-96 relative">
+          <div className="w-full md:w-96 ">
             <input type="text" 
             placeholder='Buscar por cardápio...'
             value={busca}
@@ -196,6 +203,46 @@ export default function App() {
       )}
       </main>
 
+      {/* =========================== RODAPÉ profissional ======================= */}
+      <footer className='bg-gray-900 text-gray-400 text-sm mt-16 border-t border-gray-800'>
+        <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 grid grid-cols-1 gap-8'>
+
+          {/* Coluna 1: sobre*/}
+          <div className='space-y-3'>
+            <h3 className='text-white font-bold text-lg tracking-tight'>Pães & Doces Cia</h3>
+            <p className='text-gray-400 text-xs leading-relaxed max-w-sm'>Trazendo o melhor da panificação artesanal e confeitaria para o seu dia a dia. </p>
+          </div>
+
+          {/* Coluna 2: horários */}
+          <div className='space-y-2'>
+            <h4 className='text-white font-bold text-sm'>Horário de funcionamento</h4>
+            <p className='text-gray-400 text-xs '>Segunda a Sábado: 06:00 às 20:00</p>
+            <p className='text-gray-400 text-xs '>Segunda a Sábado: 07:00 às 13:00</p>
+          </div>
+
+          {/* Coluna 3: redes sociais e contato */}
+          <div className='space-y-3'>
+            <h4 className='text-white font-bold text-sm'>Contatos & Redes</h4>
+            <div className='flex items-center gap-2 text-xs '>
+                <LuPhone /> (11) 99999-8888
+            </div>
+            <div className='flex gap-4 pt-1'>
+              <a href="#" className='hover:text-amber-500 transition-colors text-lg '   ><LuInstagram /></a>
+              <a href="#" className='hover:text-amber-500 transition-colors text-lg '   ><LuFacebook /></a>
+            </div>
+          </div>
+        </div>
+
+        {/* Linha de Copyright */}
+        <div className='border-t border-gray-800 text-center py-4 text-xs text-gray-500 bg-gray-950 '  >
+          &copy; 2026 Pães & Doces Cia. Desenvolvido como portfólio Full-Stack.
+        </div>
+        
+        
+      </footer>
+
+
+
       {/* Sidebar so carrinho ( vai aparece ao clicar na sacola ) */}
       {carrinhoAberto && (
         <div className='fixed inset-0 bg-black/40 z-50 flex justify-end backdrop-blur-sm animate-fade-in'>
@@ -203,7 +250,8 @@ export default function App() {
 
             {/* Topo do carrinho */}
             <div className='flex items-center justify-between border-b border-gray-100 pb-4 mb-4'>
-              <h2 className='text-xl font-bold text-gray-900'> Sua sacola</h2>
+              <h2 className='text-xl font-bold text-gray-900'>
+                <LuShoppingBag className='text-amber-600'/> Sua sacola</h2>
               <button
               onClick={() => setCarrinhoAberto(false)} className='text-gray-400 hover:text-gray-600 font-bold text-lg cursor-pointer p-1'
               >  ✕ </button>
@@ -231,6 +279,14 @@ export default function App() {
                       <span className='text-xs font-bold px-1'>{item.quantidade}</span>
                       <button onClick={() => adicionarAocarrinho(item)} className='px-1.5 text-gray-500 hover:text-amber-600 font-bold cursor-pointer'>+</button>
                     </div>
+
+                    {/* Botão de excluir pruduto inteiro */}
+                    <button
+                    onClick={() => deletarDoCarrinho(item.id)}
+                    title='Remover produto'
+                    className='p-1.5 text-gray-300 hover:text-red-500 rounded-lg hover:bg-red-50 transition-colors cursor-pointer ml-1 '>
+                      <LuTrash />
+                    </button>
                   </div>
                 ))
               )}
