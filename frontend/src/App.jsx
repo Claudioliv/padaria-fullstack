@@ -218,7 +218,7 @@ export default function App() {
           <div className='space-y-2'>
             <h4 className='text-white font-bold text-sm'>Horário de funcionamento</h4>
             <p className='text-gray-400 text-xs '>Segunda a Sábado: 06:00 às 20:00</p>
-            <p className='text-gray-400 text-xs '>Segunda a Sábado: 07:00 às 13:00</p>
+            <p className='text-gray-400 text-xs '>Domingos e Feriados: 07:00 às 13:00</p>
           </div>
 
           {/* Coluna 3: redes sociais e contato */}
