@@ -113,96 +113,97 @@ export default function App() {
   
 
   return (
-    <div className="min-h-screen bg-gray-50 text-gray-900 font-sans relative overflow-x-hidden">
+    <div className="min-h-screen bg-gray-50 text-gray-900 font-sans flex flex-col justify-between">
       {/* header */}
-      <header className="bg-white shadow-sm border-b border-gray-100 sticky top-0 z-40">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
-          <h1 className="text-2xl font-black tracking-tight text-amber-600">
-            <span className="texr-gray-800">Pães & Doces Cia</span>
-          </h1>
+      <div className='w-full'>
 
-          {/* Botão de Sacola de compras */}
-          <button
-           onClick={() => setCarrinhoAberto(true)}  className='bg-amber-600 hover:bg-amber-700 text-white font-bold pt-2 px-4 rounded-xl flex items-center gap-2 transition-colors cursor-pointer shadow-sm shadow-amber-200 group'
-          >
-            <LuShoppingBag className='text-lg group-hover:scale-110 transition-transform'/>
-            <span className='text-sm tracking-wide hidden sm:inline'>
-               Minha Sacola</span>
-              {totalItens > 0 && (
-                <span className='bg-white text-amber-700 text-xs font-black rounded-full w-5 h-5 flex item-center justify-center animate-pulse'>
-                  {totalItens}
-                </span>
-              )}
-          </button>
+        <header className="bg-white/95 backdrop-blur-md shadow-sm border-b border-gray-100 sticky top-0 z-50">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <h1 className="text-2xl font-black tracking-tight text-amber-600">
+              <span className="texr-gray-800">Pães & Doces Cia</span>
+            </h1>
+            {/* Botão de Sacola de compras */}
+            <button
+             onClick={() => setCarrinhoAberto(true)}  className='bg-amber-600 hover:bg-amber-700 text-white font-bold pt-2 px-4 rounded-xl flex items-center gap-2 transition-colors cursor-pointer shadow-sm shadow-amber-200 group'
+            >
+              <LuShoppingBag className='text-lg group-hover:scale-110 transition-transform'/>
+              <span className='text-sm tracking-wide hidden sm:inline'>
+                 Minha Sacola</span>
+                {totalItens > 0 && (
+                  <span className='bg-white text-amber-700 text-xs font-black rounded-full w-5 h-5 flex item-center justify-center animate-pulse'>
+                    {totalItens}
+                  </span>
+                )}
+            </button>
+          </div>
+        </header>
+      
 
-        </div>
-      </header>
+        {/* Conteúdo Proncipal */}
 
-      {/* Conteúdo Proncipal */}
+        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          {/* Sesão de busca e filtros */}
+          <div className="mb-10 bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex flex-col md:flex-row gap-4 items-center justify-between">
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Sesão de busca e filtros */}
-        <div className="mb-10 bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex flex-col md:flex-row gap-4 items-center justify-between">
+            {/* Input de busca */}
+            <div className="w-full md:w-96 ">
+              <input type="text" 
+              placeholder='Buscar por cardápio...'
+              value={busca}
+              onChange={(e) => setBusca(e.target.value)}
+              className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500 focus:bg-white transition-all text-sm"
+              />
+            </div>
 
-          {/* Input de busca */}
-          <div className="w-full md:w-96 ">
-            <input type="text" 
-            placeholder='Buscar por cardápio...'
-            value={busca}
-            onChange={(e) => setBusca(e.target.value)}
-            className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500 focus:bg-white transition-all text-sm"
-             />
+            {/* Botão de categorias */}
+            <div className="flex gap-2 self-start md:self-auto overflow-x-auto pb-2 md:pb-0 w-full md:w-auto">
+              {['Todos', 'Pães', 'Doces', 'Bebidas'].map((cat) => (
+                <button
+                key={cat}
+                onClick={() => setCategoriaAtiva(cat)}
+                className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors cursor-pointer whitespace-nowrap ${
+                  categoriaAtiva === cat 
+                  ? 'bg-amber-500 text-white shadow-sm shadow-amber-200'
+                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                }`}
+                >
+                  {cat}
+                </button>
+              ))}
+            </div>
           </div>
 
-          {/* Botão de categorias */}
-          <div className="flex gap-2 self-start md:self-auto overflow-x-auto pb-2 md:pb-0 w-full md:w-auto">
-            {['Todos', 'Pães', 'Doces', 'Bebidas'].map((cat) => (
-              <button
-              key={cat}
-              onClick={() => setCategoriaAtiva(cat)}
-              className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors cursor-pointer whitespace-nowrap ${
-                categoriaAtiva === cat 
-                ? 'bg-amber-500 text-white shadow-sm shadow-amber-200'
-                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-              }`}
-              >
-                {cat}
-              </button>
+
+          {/* Listagem de produtos */}
+          <div className="mb-8">
+            <h2 className="text-3xl font-extrabold tracking-tight text-gray-900">
+              Nosso Cardápio
+            </h2>
+            <p className="mt-2 text-sm text-gray-500">
+              Produtos frequinhos
+            </p>
+          </div>
+
+        {/* Estado de carregando ( Skeleton loading simples)*/}
+        {carregando ? (
+          <div className="text-center py-12 text-gray-500 font-medium animate-pulse">
+            Carregando produtos...
+          </div>
+        ) : produtosFiltrados.length === 0 ? (
+          /* Grid de  produtos */
+          <div className="text-center py-12 text-gray-400 font-medium bg-white rounded-2xl border border-dashed border-gray-200">
+            Nenhum produto encontrado para essa busca. 😢
+          </div>
+        ) : ( 
+          //Grid dos produtos
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 justify-items-center cursor-pointer">
+            {produtosFiltrados.map((produto) => (
+              <CardProduto key={produto.id} produto={produto} onAdicionar={adicionarAocarrinho}/>
             ))}
           </div>
-        </div>
-
-
-        {/* Listagem de produtos */}
-        <div className="mb-8">
-          <h2 className="text-3xl font-extrabold tracking-tight text-gray-900">
-            Nosso Cardápio
-          </h2>
-          <p className="mt-2 text-sm text-gray-500">
-            Produtos frequinhos
-          </p>
-        </div>
-
-      {/* Estado de carregando ( Skeleton loading simples)*/}
-      {carregando ? (
-        <div className="text-center py-12 text-gray-500 font-medium animate-pulse">
-          Carregando produtos...
-        </div>
-      ) : produtosFiltrados.length === 0 ? (
-        /* Grid de  produtos */
-        <div className="text-center py-12 text-gray-400 font-medium bg-white rounded-2xl border border-dashed border-gray-200">
-          Nenhum produto encontrado para essa busca. 😢
-        </div>
-      ) : ( 
-        //Grid dos produtos
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 justify-items-center cursor-pointer">
-          {produtosFiltrados.map((produto) => (
-            <CardProduto key={produto.id} produto={produto} onAdicionar={adicionarAocarrinho}/>
-          ))}
-        </div>
-      )}
-      </main>
-
+        )}
+        </main>
+      </div>  
       {/* =========================== RODAPÉ profissional ======================= */}
       <footer className='bg-gray-900 text-gray-400 text-sm mt-16 border-t border-gray-800'>
         <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 grid grid-cols-1 gap-8'>
@@ -299,7 +300,7 @@ export default function App() {
                   <span>R$ {valorTotal.toLocaleString('pt-br', { minimumFractionDigits: 2})} </span>
                 </div>
                 <button className='w-full bg-amber-500 hover:bg-amber-600 text-white font-bold py-3 rounded-xl transition-colors cursor-pointer text-center'>
-                  Finalzar Pedido
+                  Finalizar Pedido
                 </button>
               </div>
             )}
